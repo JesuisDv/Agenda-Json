@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite App</title>
+  </head>
+  <body>
+    <form action="" id="formData">
+      <h1>Mi Agenda</h1>
+      <input type="text" id="date" placeholder="Ingresa tu Tarea">
+      <button>Send</button>
+    </form>
+
+    <div id="logic">
+      <button id="">Completadas</button>
+      <button id="">Por hacer</button>
+      <button id="">Todas</button>
+      <button onclick="getData()" >Traer</button>
+    </div>
+
+    <ul id="tasks"></ul>
+
+  </body>
+  <script src="/src/main.js"></script>
+  </html>

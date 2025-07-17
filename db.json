@@ -1,0 +1,28 @@
+{
+  "tareas": [
+    {
+      "id": "1",
+      "titulo": "Tarea 1",
+      "descripcion": "Descripción de la tarea 1",
+      "completada": false
+    },
+    {
+      "id": "1752625721794",
+      "completada": false
+    },
+    {
+      "id": "1752625735200",
+      "completada": false
+    },
+    {
+      "id": "1752625830967",
+      "titulo": "Hola",
+      "completada": false
+    },
+    {
+      "id": 1752794779074,
+      "titulo": "Ir al gym",
+      "completada": false
+    }
+  ]
+}
