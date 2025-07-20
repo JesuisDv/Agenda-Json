@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./src/style.css">
     <title>Vite App</title>
   </head>
   <body>
@@ -14,13 +15,33 @@
     </form>
 
     <div id="logic">
-      <button id="">Completadas</button>
       <button id="">Por hacer</button>
-      <button id="">Todas</button>
-      <button onclick="getData()" >Traer</button>
+      <button id="">En Proceso</button>
+      <button id="">Completadas</button>
+      <button id="" onclick="getData()">Todas</button>
     </div>
 
-    <ul id="tasks"></ul>
+    <div id="boards">
+      <div id="toDo" class="board">
+        <h2>Por Hacer</h2>
+        <ul id="toDoList"></ul>
+      </div>
+  
+      <div id="inProgress" class="board">
+        <h2>En Proceso</h2>
+        <ul id="inProgressList"></ul>
+      </div>
+  
+      <div id="completed" class="board">
+        <h2>Completadas</h2>
+        <ul id="completedList"></ul>
+      </div>
+      
+      <div id="all" class="board">
+        <h2>Todas</h2>
+        <ul id="tasks"></ul>
+      </div>
+    </div>
 
   </body>
   <script src="/src/main.js"></script>

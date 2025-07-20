@@ -4,7 +4,7 @@
       "id": "1",
       "titulo": "Tarea 1",
       "descripcion": "Descripci",
-      "completada": false
+      "completada": true
     },
     {
       "id": "1752625830967",
@@ -14,7 +14,7 @@
     {
       "id": "1752798796759",
       "titulo": "dsadad",
-      "completada": false
+      "completada": true
     }
   ]
 }

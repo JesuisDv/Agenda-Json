@@ -14,7 +14,7 @@ async function getData() {
 
     data.forEach((item) => {
       const li = document.createElement("li");
-      li.innerHTML = `<input type="checkbox" ${item.completada ? 'checked' : ''} onchange="toggleEstado(${item.id}, this.checked) "> ${item.titulo}`;
+      li.innerHTML = `<label><input class="checkBox" type="checkbox" ${item.completada ? 'checked' : ''} onchange="toggleEstado(${item.id}, this.checked)">${item.titulo}</label>`;
       list.appendChild(li);
     });
 
