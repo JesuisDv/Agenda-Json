@@ -48,14 +48,14 @@ body{
     background-color: rgba(0, 110, 236, 0.644);
 }
 
-#tasks{
+.contList{
     display: flex;
     flex-direction: column;
     list-style: none;
     gap: 20px;
 }
 
-#tasks li{
+.contList li{
     background-color: white;
     padding: 20px;
     border-radius: 20px;
