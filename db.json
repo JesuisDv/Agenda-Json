@@ -1,20 +1,28 @@
 {
   "tareas": [
     {
-      "id": "1",
-      "titulo": "Tarea 1",
-      "descripcion": "Descripci",
-      "completada": true
+      "id": "1753056609989",
+      "titulo": "Cocinar almuerzo",
+      "completada": false,
+      "estado": "en-proceso"
     },
     {
-      "id": "1752625830967",
+      "id": "1753056820095",
+      "titulo": "Gym",
+      "completada": true,
+      "estado": "completada"
+    },
+    {
+      "id": "1753060401941",
       "titulo": "Hola",
-      "completada": true
+      "completada": false,
+      "estado": "por-hacer"
     },
     {
-      "id": "1752798796759",
-      "titulo": "dsadad",
-      "completada": true
+      "id": "1753061981159",
+      "titulo": " Hacer aseo",
+      "completada": true,
+      "estado": "completada"
     }
   ]
 }
