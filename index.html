@@ -10,39 +10,38 @@
   <body>
     <form action="" id="formData">
       <h1>Mi Agenda</h1>
-      <input type="text" id="date" placeholder="Ingresa tu Tarea">
+      <input type="text" id="date" placeholder="Ingresa tu Tarea" required>
       <button>Send</button>
     </form>
 
     <div id="logic">
-      <button id="">Por hacer</button>
-      <button id="">En Proceso</button>
-      <button id="">Completadas</button>
       <button id="" onclick="getData()">Todas</button>
     </div>
 
     <div id="boards">
       <div id="toDo" class="board">
         <h2>Por Hacer</h2>
-        <ul id="toDoList"></ul>
+        <ul id="toDoList" class="contList"></ul>
       </div>
   
       <div id="inProgress" class="board">
         <h2>En Proceso</h2>
-        <ul id="inProgressList"></ul>
+        <ul id="inProgressList" class="contList"></ul>
       </div>
   
       <div id="completed" class="board">
         <h2>Completadas</h2>
-        <ul id="completedList"></ul>
+        <ul id="completedList" class="contList"></ul>
       </div>
       
       <div id="all" class="board">
         <h2>Todas</h2>
-        <ul id="tasks"></ul>
+        <ul id="todasList" class="contList"></ul>
       </div>
     </div>
 
   </body>
   <script src="/src/main.js"></script>
   </html>
+
+  
