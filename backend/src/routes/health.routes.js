@@ -11,3 +11,5 @@ router.get('/', (req, res)=>{
         message: 'Backend Running'
     })
 })
+
+export default router;

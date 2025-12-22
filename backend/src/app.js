@@ -2,6 +2,7 @@
 
 import express from 'express'
 import cors from 'cors'
+import './config/db.js'
 import healthRoutes from './routes/health.routes.js'
 
 //Creamos al app en express
