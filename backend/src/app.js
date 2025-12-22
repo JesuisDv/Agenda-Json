@@ -4,6 +4,8 @@ import express from 'express'
 import cors from 'cors'
 import './config/db.js'
 import healthRoutes from './routes/health.routes.js'
+import appointmentsRoutes from './routes/appointments.routes.js'
+
 
 //Creamos al app en express
 const app = express()
@@ -16,6 +18,8 @@ app.use(express.json())
 
 //Rutas del sistema
 app.use('/api/health', healthRoutes)
+app.use('/api/appointments', appointmentsRoutes)
+
 
 export default app;
 
