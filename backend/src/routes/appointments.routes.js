@@ -174,3 +174,96 @@ router.get('/:id', async(req, res)=>{
         })
     }
 })
+
+
+// ======================================================
+// Editar una cita por ID
+// PUT /api/appointments/:id
+// ======================================================
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params // Extraemos el ID de la URL
+    const { customer_name, customer_phone, appointment_date, appointment_time } = req.body // Extraemos los nuevos datos del body
+
+    // Validación básica: verificar que todos los campos sean proporcionados
+    if (!customer_name || !customer_phone || !appointment_date || !appointment_time) {
+      return res.status(400).json({
+        error: 'Todos los campos son obligatorios para editar la cita.'
+      })
+    }
+
+    // Validación: no permitir editar citas en el pasado
+    const now = new Date()
+    const appointmentDateTime = new Date(`${appointment_date}T${appointment_time}`)
+    if (appointmentDateTime < now) {
+      return res.status(400).json({
+        error: 'No se puede editar la cita para una fecha pasada.'
+      })
+    }
+
+    // Verificar que no exista otra cita con la misma fecha y hora (para evitar dobles citas)
+    const [existing] = await pool.query(
+      'SELECT * FROM appointments WHERE appointment_date = ? AND appointment_time = ? AND id != ?',
+      [appointment_date, appointment_time, id]
+    )
+    if (existing.length > 0) {
+      return res.status(400).json({
+        error: 'Ya existe una cita en ese horario.'
+      })
+    }
+
+    // Actualizamos la cita en la base de datos
+    await pool.query(
+        `UPDATE appointments
+         SET customer_name = ?, customer_phone = ?, appointment_date = ?, appointment_time = ? 
+         WHERE id = ?`,
+        [customer_name, customer_phone, appointment_date, appointment_time, id]
+    )
+
+    //Respues de exito al actualizar
+    return res.status(200).json({
+        message: 'Cita actualizada con exito'
+    })
+
+    }catch(error){
+        console.error('Error al editar la cita: ',error)
+
+        return res.status(500).json({
+            error: 'Error interno del servidor, editar'
+        })
+    }
+})
+
+
+// ======================================================
+// Eliminar una cita por ID
+// DELETE /api/appointments/:id
+// ======================================================
+
+router.delete('/:id', async (req, res)=>{
+    try{
+        const { id } = req.params 
+
+        //Verificar que la cita si existe antes de eliminarla
+        const [existing] = await pool.query(`SELECT * FROM appointments WHERE id = ?`,[id])
+        if(existing.length === 0){
+            return res.status(404).json({
+                error: 'Cita no encontrada'
+            })
+        }
+
+        //Aqui se elimina la cita
+        await pool.query('DELETE FROM appointments WHERE id= ?', [id])
+
+        //Respuesta de exito
+        return res.status(200).json({
+            message: 'Cita eliminada correctamente'
+        })
+
+    }catch(error){
+        console.error('Error al eliminar la cita, ',error)
+        return res.status(500).json({
+            error: 'Error interno del servidor'
+        })
+    }
+})
