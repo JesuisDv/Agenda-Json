@@ -233,3 +233,37 @@ router.put('/:id', async (req, res) => {
         })
     }
 })
+
+
+// ======================================================
+// Eliminar una cita por ID
+// DELETE /api/appointments/:id
+// ======================================================
+
+router.delete('/:id', async (req, res)=>{
+    try{
+        const { id } = req.params 
+
+        //Verificar que la cita si existe antes de eliminarla
+        const [existing] = await pool.query(`SELECT * FROM appointments WHERE id = ?`,[id])
+        if(existing.length === 0){
+            return res.status(404).json({
+                error: 'Cita no encontrada'
+            })
+        }
+
+        //Aqui se elimina la cita
+        await pool.query('DELETE FROM appointments WHERE id= ?', [id])
+
+        //Respuesta de exito
+        return res.status(200).json({
+            message: 'Cita eliminada correctamente'
+        })
+
+    }catch(error){
+        console.error('Error al eliminar la cita, ',error)
+        return res.status(500).json({
+            error: 'Error interno del servidor'
+        })
+    }
+})
