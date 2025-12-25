@@ -5,6 +5,7 @@ import cors from 'cors'
 import './config/db.js'
 import healthRoutes from './routes/health.routes.js'
 import appointmentsRoutes from './routes/appointments.routes.js'
+import authRoutes from './routes/auth.routes.js'
 
 
 //Creamos al app en express
@@ -20,6 +21,8 @@ app.use(express.json())
 app.use('/api/health', healthRoutes)
 app.use('/api/appointments', appointmentsRoutes)
 
+//ruta de autenticacion login
+app.use('/api/auth', authRoutes)
 
 export default app;
 

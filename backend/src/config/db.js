@@ -1,4 +1,9 @@
 import mysql from 'mysql2/promise'
+import dotenv from 'dotenv'
+
+
+// Carga las variables de entorno
+dotenv.config()
 
 /*
 Creamos un pool de conexiones.
@@ -6,6 +11,7 @@ un pool: -reutiliza conexiones
          -Es mas eficiente
          -Evita saturar MySQL
 */ 
+
 
 const pool = mysql.createPool({
     host:process.env.DB_HOST,
