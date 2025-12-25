@@ -5,6 +5,9 @@ import { Router } from 'express'
 // pool es el objeto que nos permite ejecutar consultas SQL
 import pool from '../config/db.js'
 
+//Proteger rutas sensibles
+import { authAdmin } from '../../middleWares/authAdmin.js'
+
 const router = Router()// Creamos una instancia del router
 
 
@@ -266,4 +269,10 @@ router.delete('/:id', async (req, res)=>{
             error: 'Error interno del servidor'
         })
     }
+})
+
+
+//SOLO ADMIN
+router.delete('/:id', authAdmin, async (req, res)=>{
+    
 })
