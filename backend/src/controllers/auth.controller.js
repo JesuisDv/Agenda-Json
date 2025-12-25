@@ -1,10 +1,11 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import pool from '../src/config/db.js'
+import pool from '../config/db.js'
 
 //login del admin
 export const loginAdmin = async(req, res) =>{
     try{
+        console.log('📦 BODY:', req.body)
         const { username, password} = req.body
 
         //Validacion basica
@@ -22,7 +23,7 @@ export const loginAdmin = async(req, res) =>{
 
         if(rows.length === 0 ){
             return res.status(401).json({
-                error: 'Credenciales invalidad'
+                error: 'Credenciales invalidas'
             })
         }
 
@@ -38,7 +39,7 @@ export const loginAdmin = async(req, res) =>{
         }
 
         //Creamos el token
-        const token = jwt.sigh(
+        const token = jwt.sign(
             { adminId: admin.id },
             process.env.JWT_SECRET,
             { expiresIn: '8h'}
