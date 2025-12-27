@@ -83,6 +83,7 @@ router.post('/', async (req, res)=>{
             `,
             [appointment_date, appointment_time]// Valores seguros (evita SQL Injection)
         )
+        
 
         //Si el arreglo tiene resultados, ya existe una cita creada
         if(existingAppointments.length > 0){
@@ -90,6 +91,8 @@ router.post('/', async (req, res)=>{
                 error: 'Ya existe una cita en ese horario 🥱'
             })
         }
+
+        
 
         //INSERTAR LA CITA A LA DB
         await pool.query(

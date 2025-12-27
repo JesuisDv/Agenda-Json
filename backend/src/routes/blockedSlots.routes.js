@@ -20,6 +20,24 @@ router.post('/', authAdmin, async (req, res)=>{
             })
         }
 
+        //Validacion para verificar si el horario ya esta bloqueado
+        // Verificar si el horario ya está bloqueado
+        const [existing] = await pool.query(
+            `
+            SELECT id 
+            FROM blocked_slots 
+            WHERE block_date = ? AND block_time = ?
+            `,
+            [block_date, block_time]
+        )
+
+        if (existing.length > 0) {
+            return res.status(400).json({
+                error: 'Ese horario ya está bloqueado ⛔'
+            })
+        }
+
+
         //Insertar bloqueo
         await pool.query(
             `
