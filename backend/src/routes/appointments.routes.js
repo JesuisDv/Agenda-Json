@@ -54,7 +54,25 @@ router.post('/', async (req, res)=>{
             })
         }
 
-        //VALIDACIÓN 3: evitar doble cita (misma fecha y hora)
+        // VALIDACIÓN 3: horario bloqueado
+        const [blocked] = await pool.query(
+            `
+            SELECT id
+            FROM blocked_slots
+            WHERE block_date = ?
+            AND block_time = ?
+            `,
+            [appointment_date, appointment_time]
+        )
+
+            if (blocked.length > 0) {
+                return res.status(400).json({
+                error: 'Este horario no está disponible 🚫'
+            })
+        }
+
+
+        //VALIDACIÓN 4: evitar doble cita (misma fecha y hora)
         // Ejecutamos una consulta SQL para buscar citas existentes
         const [existingAppointments] = await pool.query(
             `
@@ -103,7 +121,7 @@ router.post('/', async (req, res)=>{
     }
 })
 
-export default router
+
 
 // ======================================================
 // Endpoint para OBTENER todas las citas (ADMIN)
@@ -272,7 +290,6 @@ router.delete('/:id', async (req, res)=>{
 })
 
 
-//SOLO ADMIN
-router.delete('/:id', authAdmin, async (req, res)=>{
-    
-})
+
+
+export default router

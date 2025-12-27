@@ -21,7 +21,7 @@ export const authAdmin = (req, res, next)=>{
         next()
 
     }catch(error){
-        console.error('Error con el TOEKN en el sistema', error)
+        console.error('Error con el TOKEN en el sistema', error)
         return res.status(401).json({
             error: 'Token invalido'
         })

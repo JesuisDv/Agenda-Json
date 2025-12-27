@@ -6,6 +6,8 @@ import './config/db.js'
 import healthRoutes from './routes/health.routes.js'
 import appointmentsRoutes from './routes/appointments.routes.js'
 import authRoutes from './routes/auth.routes.js'
+import blockedSlotsRoutes from './routes/blockedSlots.routes.js'
+
 
 
 //Creamos al app en express
@@ -23,6 +25,10 @@ app.use('/api/appointments', appointmentsRoutes)
 
 //ruta de autenticacion login
 app.use('/api/auth', authRoutes)
+
+//Ruta POST /api/blocked-slots
+app.use('/api/blocked-slots', blockedSlotsRoutes)
+
 
 export default app;
 
