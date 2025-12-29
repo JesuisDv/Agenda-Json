@@ -157,6 +157,139 @@ router.get('/', async (req, res)=>{
 })
 
 // ======================================================
+// Horarios disponibles por fecha
+// GET /api/appointments/available?date=YYYY-MM-DD
+// ======================================================
+
+router.get('/available', async (req, res)=>{
+    try{
+        const { date }= req.query
+
+        //Validacion basica
+        if(!date){
+            res.status(400).json({
+                error:'La fecha es obligatoria'
+            })
+        }
+
+        //DEFINIR HORARIO LABORAL
+        const startHour= 9
+        const endHour = 17
+        const intervalMinutes = 60
+
+        const slots = []
+
+        //Generar todos los horarios del dia
+
+        let current = new Date(`${date}T${String(startHour).padStart(2, '0')}:00:00`)
+        const end = new Date(`${date}T${String(endHour).padStart(2, '0')}:00:00`)
+
+        while(current < end){
+            slots.push(current.toTimeString().slice(0, 8))
+            current.setMinutes(current.getMinutes() + intervalMinutes)
+        }
+
+        //OBTENER CITAS EXISTENTES
+        const [appointments] = await pool.query(
+            `
+            SELECT appointment_time
+            FROM appointments
+            WHERE appointment_date = ?
+            `,
+            [date]
+        )
+
+        const takenTimes = appointments.map(a => a.appointment_time)
+
+        //OBTENER HORARIO BLOQUEADOS
+
+        const [blocked] = await pool.query(
+            `
+            SELECT block_time
+            FROM blocked_slots
+            WHERE block_date = ?
+            `,
+            [date]
+        )
+
+        const blockedTimes = blocked.map(b => b.block_time)
+
+        //FILTRAR HORARIOS DISPONIBLES
+
+        const unavailable = [...takenTimes, ...blockedTimes]
+
+        const availableSlots = slots.filter(
+            slot => ! unavailable.includes(slot)
+        )
+
+        //RESPUESTA FINAL
+        return res.status(200).json({
+            date,
+            available_slots: availableSlots
+        })
+
+    }catch(error){  
+        console.error('Error al obtener horarios disponibles', error)
+        return res.status(500).json({
+            error: 'Error interno del servidor'
+        })
+    }
+})
+
+// ======================================================
+// Agenda administrativa (filtros por fecha y estado)
+// GET /api/appointments/admin
+// SOLO ADMIN
+// ======================================================
+
+router.get('/admin', authAdmin, async (req, res)=>{
+    try{
+        //Extraemos filtros desde query params
+        const { date, status } = req.query
+
+        //Query base
+        let query = `
+        SELECT *
+        FROM appointments
+        WHERE 1 = 1
+        `
+
+        const values = []
+
+        //Filtro por fecha (Si vienen)
+        if(date) {
+            query += 'AND appointment_date = ?'
+            values.push(date)
+        }
+
+        //Filtro por estado si viene
+        if(status){
+            query += 'AND status = ?'
+            values.push(status)
+        }
+
+        //Ordenamos siempre por fecha y hora
+        query += ' ORDER BY appointment_date ASC, appointment_time ASC'
+
+        //Ejecutamos consulta
+        const [appointments] = await pool.query(query, values)
+
+        //Respuesta
+        return res.status(200).json({
+            total: appointments.length,
+            data: appointments
+        })
+
+    }catch(error){
+        console.error('Error al obtener agenda admin: ', error)
+        return res.status(500).json({
+            error: 'Error interno del servidor'
+        })
+    }
+})
+
+
+// ======================================================
 // Endpoint para OBTENER Cita por ID
 // GET /api/appointments/:id
 // ======================================================
@@ -259,6 +392,7 @@ router.put('/:id', async (req, res) => {
 })
 
 
+
 // ======================================================
 // Eliminar una cita por ID
 // DELETE /api/appointments/:id
@@ -292,7 +426,60 @@ router.delete('/:id', async (req, res)=>{
     }
 })
 
+// ======================================================
+// Cambiar estado de una cita (SOLO ADMIN)
+// PATCH /api/appointments/:id/status
+// ======================================================
 
+router.patch('/:id/status', authAdmin, async (req, res)=>{
+    try{
+        const { id }= req.params
+        const {status}=req.body
+
+        //Estados permitidos
+        const allowedStatus = ['confirmed', ' canceled', 'completed']
+
+        //Validar status enviado
+        if(!allowedStatus.includes(status)){
+            return res.status(400).json({
+                error: 'Estado no valido'
+            })
+        }
+
+        //Verificar que la cita exista
+        const [existing] = await pool.query(
+            `
+            SELECT * FROM appointments WHERE id = ?
+            `,
+            [id]
+        )
+
+        if(existing.length === 0){
+            return res.status(404).json({
+                error: 'Cita no creada'
+            })
+        }
+
+        //Actualizar estado
+        await pool.query(
+            `
+            UPDATE appointments SET status = ? WHERE id = ?
+            `,
+            [status, id]
+        )
+
+        return res.status(200).json({
+            message: `Cita actualizada a estado: ${status}`
+        })
+
+
+    }catch(error){
+        console.error('Error al actualizar el estado de la cita', error)
+        return res.status(500).json({
+            error: 'Error interno del servidor'
+        })
+    }
+})
 
 
 export default router
