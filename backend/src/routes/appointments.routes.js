@@ -237,6 +237,59 @@ router.get('/available', async (req, res)=>{
 })
 
 // ======================================================
+// Agenda administrativa (filtros por fecha y estado)
+// GET /api/appointments/admin
+// SOLO ADMIN
+// ======================================================
+
+router.get('/admin', authAdmin, async (req, res)=>{
+    try{
+        //Extraemos filtros desde query params
+        const { date, status } = req.query
+
+        //Query base
+        let query = `
+        SELECT *
+        FROM appointments
+        WHERE 1 = 1
+        `
+
+        const values = []
+
+        //Filtro por fecha (Si vienen)
+        if(date) {
+            query += 'AND appointment_date = ?'
+            values.push(date)
+        }
+
+        //Filtro por estado si viene
+        if(status){
+            query += 'AND status = ?'
+            values.push(status)
+        }
+
+        //Ordenamos siempre por fecha y hora
+        query += ' ORDER BY appointment_date ASC, appointment_time ASC'
+
+        //Ejecutamos consulta
+        const [appointments] = await pool.query(query, values)
+
+        //Respuesta
+        return res.status(200).json({
+            total: appointments.length,
+            data: appointments
+        })
+
+    }catch(error){
+        console.error('Error al obtener agenda admin: ', error)
+        return res.status(500).json({
+            error: 'Error interno del servidor'
+        })
+    }
+})
+
+
+// ======================================================
 // Endpoint para OBTENER Cita por ID
 // GET /api/appointments/:id
 // ======================================================
@@ -427,5 +480,6 @@ router.patch('/:id/status', authAdmin, async (req, res)=>{
         })
     }
 })
+
 
 export default router
