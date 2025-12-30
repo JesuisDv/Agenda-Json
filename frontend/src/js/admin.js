@@ -7,6 +7,22 @@ if (!token) {
     window.location.href = '/admin.html'
 }
 
+//Formatear fecha
+function formatDate(dateString) {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('es-CO')
+}
+
+//Estados al espanol
+function formatStatus(status) {
+  const map = {
+    pending: 'Pendiente',
+    confirmed: 'Confirmada',
+    cancelled: 'Cancelada'
+  }
+  return map[status] || status
+}
+
 // ===============================
 // Obtener citas desde el backend
 // ===============================
@@ -46,20 +62,33 @@ function renderAppointments(appointments){
         return
     }
 
-    appointments.forEach(app =>{
-        const div = document.createElement('div')
-        div.classList.add('appointment')
+    appointments.forEach(appointment => {
+    const appointmentDiv = document.createElement('div')
+    appointmentDiv.classList.add('appointment')
 
-        div.innerHTML = `
-            <strong>${app.customer_name}</strong><br>
-            📞 ${app.customer_phone}<br>
-            📅 ${app.appointment_date} ⏰ ${app.appointment_time}<br>
-            🏷 Estado: ${app.status}
-        `
+    appointmentDiv.innerHTML = `
+        <h3>${appointment.customer_name}</h3>
+        <p>📞 ${appointment.customer_phone}</p>
+        <p>📅 ${formatDate(appointment.appointment_date)}</p>
+        <p>⏰ ${appointment.appointment_time}</p>
+        <p><strong>Estado:</strong> ${formatStatus(appointment.status)}</p>
 
-        container.appendChild(div)
+        <div class="actions">
+        <button class="confirm-btn" data-id="${appointment.id}">
+            Confirmar
+        </button>
+        <button class="cancel-btn" data-id="${appointment.id}">
+            Cancelar
+        </button>
+        </div>
+    `
+
+    container.appendChild(appointmentDiv)
     })
+
 }
 
 //Se ejecuta la carga en el dashboard
 loadAppointments()
+
+
