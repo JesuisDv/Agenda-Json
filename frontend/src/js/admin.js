@@ -82,13 +82,60 @@ function renderAppointments(appointments){
         </button>
         </div>
     `
+    if (appointment.status !== 'pending') {
+        appointmentDiv.querySelector('.actions').style.display = 'none'
+    }
 
     container.appendChild(appointmentDiv)
     })
 
 }
 
+
+// FUNCIÓN PATCH para cambiar el estado de una cita
+async function updateStatus(id, status) {
+  try {
+    const token = localStorage.getItem('token')
+
+    const res = await fetch(`http://localhost:3000/api/appointments/${id}/status`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status })
+      }
+    )
+
+    if (!res.ok) {
+      throw new Error('Error al actualizar el estado')
+    }
+
+    await loadAppointments()
+
+  } catch (error) {
+    console.error('Error', error)
+    alert('No se pudo actualizar la cita')
+  }
+}
+
+
 //Se ejecuta la carga en el dashboard
 loadAppointments()
 
+document.addEventListener('click', async(e)=>{
+    const token = localStorage.getItem('token')
 
+    //Confirmar
+    if(e.target.classList.contains('confirm-btn')){
+        const id = e.target.dataset.id
+        await updateStatus(id, 'confirmed', token)
+    }
+
+    //Cancelar
+    if(e.target.classList.contains('cancel-btn')){
+        const id = e.target.dataset.id
+        await updateStatus(id, 'canceled', token)
+    }
+})
