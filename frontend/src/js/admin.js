@@ -2,6 +2,18 @@
 // Protección del dashboard
 // ===============================
 const token = localStorage.getItem('token')
+const logoutbtn = document.getElementById('logoutBtn')
+
+
+logoutbtn.addEventListener('click', ()=>{
+
+  //borramos el token
+  localStorage.removeItem('token')
+
+  //Redirigimos al login
+  window.location.href = '/admin.html'
+})
+
 
 if (!token) {
     window.location.href = '/admin.html'
@@ -139,3 +151,4 @@ document.addEventListener('click', async(e)=>{
         await updateStatus(id, 'canceled', token)
     }
 })
+
