@@ -437,7 +437,7 @@ router.patch('/:id/status', authAdmin, async (req, res)=>{
         const {status}=req.body
 
         //Estados permitidos
-        const allowedStatus = ['confirmed', ' canceled', 'completed']
+        const allowedStatus = ['pending', 'confirmed', 'canceled', 'completed']
 
         //Validar status enviado
         if(!allowedStatus.includes(status)){
