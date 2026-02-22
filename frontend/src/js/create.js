@@ -4,6 +4,13 @@ const message = document.getElementById('message')
 form.addEventListener('submit', async (e) => {
   e.preventDefault()
 
+const horaSeleccionada = document.getElementById('appointment_time').value
+
+if (horaSeleccionada < "09:00" || horaSeleccionada > "18:00") {
+  message.textContent = "❌ Solo atendemos de 09:00 a 18:00"
+  return
+}
+
 const appointment = {
   customer_name: document.getElementById('client_name').value,
   customer_phone: document.getElementById('client_phone').value,
