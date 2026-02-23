@@ -31,11 +31,22 @@ const appointment = {
       throw new Error(data.error)
     }
 
-    message.textContent = 'Cita creada con éxito 🎉'
+    mensaje.innerHTML = `
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        Cita creada correctamente 🎉
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+  `;
+
     form.reset()
 
   } catch (err) {
     console.error(err)
-    message.textContent = 'Error: no se pudo crear la cita'
+    mensaje.innerHTML = `
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        Error al crear la cita
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    `;
   }
 })
