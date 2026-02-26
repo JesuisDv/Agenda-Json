@@ -19,7 +19,7 @@ const appointment = {
 }
 
   try {
-    const res = await fetch('http://localhost:3000/api/appointments', {
+    const res = await fetch(`${window.API_BASE_URL || 'http://localhost:3000'}/api/appointments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(appointment)

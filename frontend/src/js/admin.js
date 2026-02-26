@@ -52,7 +52,7 @@ function showAlert(message, type = 'danger') {
 
 async function loadAppointments() {
     try{
-        const res = await fetch('http://localhost:3000/api/appointments', {
+        const res = await fetch(`${window.API_BASE_URL || 'http://localhost:3000'}/api/appointments`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -132,7 +132,7 @@ async function updateStatus(id, status) {
   try {
     const token = localStorage.getItem('token')
 
-    const res = await fetch(`http://localhost:3000/api/appointments/${id}/status`,
+    const res = await fetch(`${window.API_BASE_URL || 'http://localhost:3000'}/api/appointments/${id}/status`,
       {
         method: 'PATCH',
         headers: {
@@ -160,7 +160,7 @@ async function deleteAppointment(id) {
   try {
     const token = localStorage.getItem('token')
 
-    const res = await fetch(`http://localhost:3000/api/appointments/${id}`, {
+    const res = await fetch(`${window.API_BASE_URL || 'http://localhost:3000'}/api/appointments/${id}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`
