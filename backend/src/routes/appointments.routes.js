@@ -398,7 +398,7 @@ router.put('/:id', async (req, res) => {
 // DELETE /api/appointments/:id
 // ======================================================
 
-router.delete('/:id', async (req, res)=>{
+router.delete('/:id', authAdmin, async (req, res)=>{
     try{
         const { id } = req.params 
 
