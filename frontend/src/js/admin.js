@@ -6,11 +6,10 @@ const token = localStorage.getItem('token')
 const logoutbtn = document.getElementById('logoutBtn')
 
 
-logoutbtn.addEventListener('click', ()=>{
-
+logoutbtn.addEventListener('click', (e)=>{
+  e.preventDefault()
   //borramos el token
   localStorage.removeItem('token')
-
   //Redirigimos al login
   window.location.href = '/admin.html'
 })
@@ -31,9 +30,20 @@ function formatStatus(status) {
   const map = {
     pending: 'Pendiente',
     confirmed: 'Confirmada',
-    cancelled: 'Cancelada'
+    canceled: 'Cancelada'
   }
   return map[status] || status
+}
+
+// Mostrar alerta con estilos de Bootstrap (danger, warning, success, info)
+function showAlert(message, type = 'danger') {
+  const modalEl = document.getElementById('alertModal')
+  const bodyEl = document.getElementById('alertModalBody')
+  if (!modalEl || !bodyEl) return
+  bodyEl.className = `alert alert-${type} mb-0`
+  bodyEl.textContent = message
+  const modal = new bootstrap.Modal(modalEl)
+  modal.show()
 }
 
 // ===============================
@@ -58,7 +68,7 @@ async function loadAppointments() {
 
     }catch(error){
         console.error(error)
-        alert('Error cargando citas')
+        showAlert('Error cargando citas', 'danger')
     }
 }
 
@@ -69,37 +79,49 @@ async function loadAppointments() {
 function renderAppointments(appointments){
     const container = document.getElementById('appointmentsList')
     container.innerHTML = ''
+    container.className = 'row g-3'
 
     if(appointments.length === 0){
-        container.innerHTML = '<p>No Hay Citas</p>'
+        container.innerHTML = '<p class="text-muted">No hay citas</p>'
         return
     }
 
     appointments.forEach(appointment => {
-    const appointmentDiv = document.createElement('div')
-    appointmentDiv.classList.add('appointment')
+    const isPending = String(appointment.status).toLowerCase() === 'pending'
+    const actionsHtml = isPending
+      ? `
+          <div class="actions d-flex flex-column gap-2">
+            <button type="button" class="btn btn-success btn-sm confirm-btn" data-id="${appointment.id}">Confirmar</button>
+            <button type="button" class="btn btn-danger btn-sm cancel-btn" data-id="${appointment.id}">Cancelar</button>
+          </div>
+        `
+      : `
+          <div class="actions">
+            <button type="button" class="btn btn-outline-danger btn-sm delete-btn" data-id="${appointment.id}">Borrar</button>
+          </div>
+        `
 
-    appointmentDiv.innerHTML = `
-        <h3>${appointment.customer_name}</h3>
-        <p>📞 ${appointment.customer_phone}</p>
-        <p>📅 ${formatDate(appointment.appointment_date)}</p>
-        <p>⏰ ${appointment.appointment_time}</p>
-        <p><strong>Estado:</strong> ${formatStatus(appointment.status)}</p>
+    const col = document.createElement('div')
+    col.classList.add('col-12', 'col-sm-6', 'col-lg-3')
 
-        <div class="actions">
-        <button class="confirm-btn" data-id="${appointment.id}">
-            Confirmar
-        </button>
-        <button class="cancel-btn" data-id="${appointment.id}">
-            Cancelar
-        </button>
+    col.innerHTML = `
+      <div class="card shadow-sm">
+        <div class="card-body d-flex justify-content-between align-items-start gap-3">
+          <div class="flex-grow-1 min-w-0">
+            <h5 class="card-title mb-2">${appointment.customer_name}</h5>
+            <p class="card-text mb-1 small">📞 ${appointment.customer_phone}</p>
+            <p class="card-text mb-1 small">📅 ${formatDate(appointment.appointment_date)}</p>
+            <p class="card-text mb-2 small">⏰ ${appointment.appointment_time}</p>
+            <p class="card-text mb-0"><strong>Estado:</strong> ${formatStatus(appointment.status)}</p>
+          </div>
+          <div class="flex-shrink-0">
+            ${actionsHtml}
+          </div>
         </div>
+      </div>
     `
-    if (appointment.status !== 'pending') {
-        appointmentDiv.querySelector('.actions').style.display = 'none'
-    }
 
-    container.appendChild(appointmentDiv)
+    container.appendChild(col)
     })
 
 }
@@ -129,7 +151,31 @@ async function updateStatus(id, status) {
 
   } catch (error) {
     console.error('Error', error)
-    alert('No se pudo actualizar la cita')
+    showAlert('No se pudo actualizar la cita', 'danger')
+  }
+}
+
+// FUNCIÓN DELETE para eliminar una cita (confirmadas o canceladas)
+async function deleteAppointment(id) {
+  try {
+    const token = localStorage.getItem('token')
+
+    const res = await fetch(`http://localhost:3000/api/appointments/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      throw new Error(data.error || 'Error al eliminar la cita')
+    }
+
+    await loadAppointments()
+  } catch (error) {
+    console.error('Error', error)
+    showAlert(error.message || 'No se pudo eliminar la cita', 'danger')
   }
 }
 
@@ -137,19 +183,25 @@ async function updateStatus(id, status) {
 //Se ejecuta la carga en el dashboard
 loadAppointments()
 
-document.addEventListener('click', async(e)=>{
-    const token = localStorage.getItem('token')
-
-    //Confirmar
-    if(e.target.classList.contains('confirm-btn')){
+document.addEventListener('click', async (e) => {
+    // Confirmar
+    if (e.target.classList.contains('confirm-btn')) {
         const id = e.target.dataset.id
-        await updateStatus(id, 'confirmed', token)
+        await updateStatus(id, 'confirmed')
     }
 
-    //Cancelar
-    if(e.target.classList.contains('cancel-btn')){
+    // Cancelar
+    if (e.target.classList.contains('cancel-btn')) {
         const id = e.target.dataset.id
-        await updateStatus(id, 'canceled', token)
+        await updateStatus(id, 'canceled')
+    }
+
+    // Borrar (citas confirmadas o canceladas)
+    if (e.target.classList.contains('delete-btn')) {
+        const id = e.target.dataset.id
+        if (confirm('¿Eliminar esta cita?')) {
+            await deleteAppointment(id)
+        }
     }
 })
 
